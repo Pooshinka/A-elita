@@ -11,8 +11,8 @@ from moviepy.editor import VideoFileClip
 
 pygame.init()  # Устанавливаем размеры окна
 infoObject = pygame.display.Info()
-pygame.display.set_mode((infoObject.current_w, infoObject.current_h))
 size = width, height = infoObject.current_w, infoObject.current_h
+pygame.display.set_mode((width, height))
 screen = pygame.display.set_mode(size)  # screen — холст, на котором нужно рисовать:
 pygame.mouse.set_visible(True)  # Скрываем курсор мыши
 Mouse1, Mouse2, Flag, Flag2 = False, False, 0, 0  # Мышинные клавиши небыли нажаты, в текущий момент
@@ -26,12 +26,12 @@ font_qwest = 30
 text = []  # Список меню
 text1 = ["НОВАЯ ИГРА", "ЗАГРУЗКА УРОВНЕЙ", "НАСТРОЙКИ", "ВАШ СЧЕТ", "ДО ВСТРЕЧИ ПИЛОТ"]
 text2 = ['ЭКРАН 800 х 600', 'ЭКРАН 1024х768', 'ЭКРАН 1600х900', 'ЭКРАН 1920x1080', 'ПОЛНЫЙ ЭКРАН']
-text3 = ['1. Земля. Первый полет', '2. Путь на Марс ', '3. Титан и улучшения', '4. Альфа-Центавра', '5. Планета Мюл',
-         '6. К планете Роккот', '7. База пиратов ', '8. Битва на выживание ']
+text3 = ['1. земля первый полет', '2. путь на марс', '3. титан и его улучшения', '4. альфа-центавра', '5. планета мюл на связи',
+         '6. роккот нас ждет', '7. на базе пиратов ', '8. битва за галактику']
 dialog = ['']  # Диалоги
 color_menu = pygame.Color('black')  # цвет меню
 color_menu_cursor = ('black')
-n_star = 30  # создаем коорднаты звезд и их количество
+n_star = 200  # создаем коорднаты звезд и их количество
 speed_star = 0.00515
 stars_ar = np.random.uniform(random.uniform(0, 360), random.uniform(0, 1500), size=(2, n_star))
 glava = 0  # Создаем главы игры/ Переменная отвечает за текущую главу
@@ -395,7 +395,6 @@ class Score:
         self.score = [0, 0, 0, 0, 0, 0, 0, 0]
         self.mobs = [0, 0, 0, 0, 0, 0, 0, 0]
         self.boolets = [0, 0, 0, 0, 0, 0, 0, 0]
-        self.boolets_bot = [0, 0, 0, 0, 0, 0, 0, 0]
         self.accuracy = [0, 0, 0, 0, 0, 0, 0, 0]
         self.hits = [0, 0, 0, 0, 0, 0, 0, 0]
         self.death = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -424,7 +423,7 @@ class Score:
         text_screen = font.render('ТОЧНОСТЬ СТРЕЛЬБЫ: ' + str(int(self.accuracy[level])) + ' %', True,
                                   ((0, 255, 0)))  # Выдергиваем слово и рендерим
         screen.blit(text_screen, (10, size * 4))
-        text_screen = font.render('УНИЧТОЖЕНО ПИРАТСКИХХ КОРАБЛЕЙ: ' + str(int(self.bot_kill[level])), True,
+        text_screen = font.render('УНИЧТОЖЕНО ПИРАТОВ: ' + str(int(self.bot_kill[level])), True,
                                   ((0, 255, 0)))  # Выдергиваем слово и рендерим
         screen.blit(text_screen, (10, size * 5))
         text_screen = font.render('ОСТАЛОСЬ ВРЕМЕНИ НА УРОВНЕ:' + str(int(self.time_game[level])), True,
@@ -515,12 +514,6 @@ def newmob():
 def show_go_screen():
     global size
     global clip, screen, clip_load, level, Health_player_list
-    score.score[level] = 0  # масса метеоритов
-    score.mobs[level] = 0  # количество метеоритов
-    score.boolets[level] = 0  # количество запущенных ракет
-    score.accuracy[level] = 0  # Точность попадания = boolet / hit
-    score.hits[level] = 0  # Попадания
-    score.death[level] += 1  # Смертей
     player.health_player = int(Health_player_list[level])
     # Загрузка аудио
     song = pygame.mixer.Sound(mp3_dir + '\\' + 'Сердцебиение.mp3')
@@ -637,6 +630,7 @@ def resolution(width_, height_, full):
         # infoObject = pygame.display.Info()
         pygame.display.set_mode((infoObject.current_w, infoObject.current_h))
         size = width, height = infoObject.current_w, infoObject.current_h
+        screen = pygame.display.set_mode((width, height))
         font_aelita = int(width / 24)
         font_menu = int(width / 38)
     else:
@@ -898,11 +892,9 @@ def glava0():
                     clock.tick(60)
                 t = 0
                 break
-
             t += 1 / 45  # use actual fps here
             pygame.display.flip()
             result_menu_show = False
-            result_menu_show2 = False
     return
 
 
@@ -1081,89 +1073,90 @@ def key_():
 def result_itogo():
     score_, mobs, hits, boolets, accuracy, bot_kill, time_game, death = 0, 0, 0, 0, 0, 0, 0, 0
     # пишем новое значение счёта
-    screen.fill((0, 0, 0), (int(500/1/5), int(200/1/5), WIDTH - (500/1.5), HEIGHT - (200/1.5)))
-    size = int(38)
+    level = 7
+    screen.fill((0, 0, 0), (int(500/2.08), int(200/2.08),  WIDTH - int(1000 / 2.08), HEIGHT - int(400/2.08)))
+    size = int(WIDTH / 50.5)
     font = pygame.font.SysFont('monospace', size)
     for i in range(level):
         score_ += score.score[i]
     text_screen = font.render('ОЧКИ: ' + str(score_), True, ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - int(400), HEIGHT // 2 - int(size * 4)))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 - int(size * 4)))
     for i in range(level):
         mobs += score.mobs[i]
     text_screen = font.render('УНИЧТОЖЕНО МЕТЕОРИТОВ: ' + str(mobs), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 - size * 3))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 - size * 3))
     for i in range(level):
         hits += score.hits[i]
     text_screen = font.render('ПОПАДАНИЯ: ' + str(hits), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 - size * 2))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 - size * 2))
     for i in range(level):
         boolets += score.boolets[i]
     text_screen = font.render('ВСЕГО ВЫСТРЕЛОВ: ' + str(boolets), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 - size * 1))
-    if score.hits[level] > 0:
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 - size * 1))
+    if score.boolets[level] > 0:
         score.accuracy[level] = (score.hits[level] / score.boolets[level]) * 100
     for i in range(level):
         accuracy += score.accuracy[i]
     text_screen = font.render('ТОЧНОСТЬ СТРЕЛЬБЫ: ' + str(int(accuracy)) + ' %', True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 - size * 0))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 - size * 0))
     for i in range(level):
         bot_kill += score.bot_kill[i]
-    text_screen = font.render('УНИЧТОЖЕНО ПИРАТСКИХ КОРАБЛЕЙ: ' + str(int(bot_kill)), True,
+    text_screen = font.render('УНИЧТОЖЕНО ПИРАТОВ: ' + str(int(bot_kill)), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 + size * 1))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 + size * 1))
     for i in range(level):
         time_game += score.time_game[i]
     text_screen = font.render('ОСТАЛОСЬ ВРЕМЕНИ НА УРОВНЕ:' + str(int(time_game)), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 + size * 2))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 + size * 2))
     for i in range(level):
         death += score.death[i]
     text_screen = font.render('СКОЛЬКО ПОМЕР: ' + str(int(death)), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 + size * 3))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 + size * 3))
     cherep = pygame.image.load(path.join(sprits_dir, "Череп.png")).convert_alpha()
     emodsi = pygame.transform.scale(cherep, (size, size))
     ddx, ddy, q, q1 = text_screen.get_rect()
     q1, q2 = 0, 0
     for i in range(score.death[level]):
-        screen.blit(emodsi, (WIDTH // 2 - 400 + ddx + size + 10 + q + size * (i - q1), size * (4 + q2)))
+        screen.blit(emodsi, (int(WIDTH / 20) + int(500/2.08) + ddx + size + 10 + q + size * (i - q1), size * (4 + q2)))
 
 
 def result_level():
     # пишем новое значение счёта
-    screen.fill((0, 0, 0), (500, 200, WIDTH - 1000, HEIGHT - 400))
-    size = 38
+    screen.fill((0, 0, 0), (int(500/2.08), int(200/2.08),  WIDTH - int(1000 / 2.08), HEIGHT - int(400/2.08)))
+    size = int(WIDTH / 50.5)
     font = pygame.font.SysFont('monospace', size)
     text_screen = font.render('ОЧКИ: ' + str(score.score[level]), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 - size * 4))
+    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 - size * 4))
     text_screen = font.render('УНИЧТОЖЕНО МЕТЕОРИТОВ: ' + str(score.mobs[level]), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 - size * 3))
+    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 - size * 3))
     text_screen = font.render('ПОПАДАНИЯ: ' + str(score.hits[level]), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 - size * 2))
+    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 - size * 2))
     text_screen = font.render('ВСЕГО ВЫСТРЕЛОВ: ' + str(score.boolets[level]), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 - size * 1))
+    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 - size * 1))
     if score.boolets[level] > 0:
         score.accuracy[level] = (score.hits[level] / score.boolets[level]) * 100
-    text_screen = font.render('ТОЧНОСТЬ СТРЕЛЬБЫ: ' + str(score.accuracy[level]) + ' %', True,
+    text_screen = font.render('ТОЧНОСТЬ СТРЕЛЬБЫ: ' + str(int(score.accuracy[level])) + ' %', True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 - size * 0))
-    text_screen = font.render('УНИЧТОЖЕНО ПИРАТСКИХ КОРАБЛЕЙ: ' + str(int(score.bot_kill[level])), True,
+    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 - size * 0))
+    text_screen = font.render('УНИЧТОЖЕНО ПИРАТОВ: ' + str(int(score.bot_kill[level])), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 + size * 1))
+    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 + size * 1))
     text_screen = font.render('ОСТАЛОСЬ ВРЕМЕНИ НА УРОВНЕ:' + str(int(score.time_game[level])), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 + size * 2))
+    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 + size * 2))
     text_screen = font.render('СКОЛЬКО ПОМЕР: ' + str(int(score.death[level])), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 + size * 3))
+    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 + size * 3))
     cherep = pygame.image.load(path.join(sprits_dir, "Череп.png")).convert_alpha()
     emodsi = pygame.transform.scale(cherep, (size, size))
     ddx, ddy, q, q1 = text_screen.get_rect()
@@ -1646,7 +1639,6 @@ while running:
         elif level == 7:
             while result_menu_show2:
                 result_level()
-
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit()
