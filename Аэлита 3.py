@@ -513,6 +513,7 @@ def newmob():
 
 
 def show_go_screen():
+    global size
     global clip, screen, clip_load, level, Health_player_list
     score.score[level] = 0  # масса метеоритов
     score.mobs[level] = 0  # количество метеоритов
@@ -527,7 +528,7 @@ def show_go_screen():
     # Загрузка видео
     clip = VideoFileClip(video_dir + '\\' + "heartbeat.mp4")  # (or .webm, .avi, etc.)
     surface = getSurface(0)
-    size = WIDTH, HEIGHT
+    clip = clip.resize((width, height))
     t = 0
     screen = pygame.display.set_mode(size, 0, 32)
     clock = pygame.time.Clock()
@@ -631,7 +632,7 @@ class Fade(pygame.sprite.Sprite):
 
 # Разрешение экрана изменение размера
 def resolution(width_, height_, full):
-    global screen, width, height, font_aelita, font_menu, background_image, background_image_original
+    global screen, width, height, font_aelita, font_menu, background_image, background_image_original, size, WIDTH, HEIGHT
     if full:
         # infoObject = pygame.display.Info()
         pygame.display.set_mode((infoObject.current_w, infoObject.current_h))
@@ -645,6 +646,7 @@ def resolution(width_, height_, full):
         font_qwest = int(width_ / 64)
         screen = pygame.display.set_mode(size)  # screen — холст, на котором нужно рисовать:
         size = width, height = width_, height_
+        WIDTH, HEIGHT = size
     background_image = background_image_original.copy()
 
 
@@ -852,7 +854,7 @@ def scena(file_name):
 
 
 def glava0():
-    global clip, surface, screen, clock
+    global clip, surface, screen, clock, result_menu_show, result_menu_show2
     global width, height, screen, menu_show, fon_text, text_mp3_list, level, Fon_text_list, mp3_dir
     scena(fon_text)
     pygame.mixer.music.load(data_text_mp3_dir + '\\' + text_mp3_list[level])
@@ -865,8 +867,9 @@ def glava0():
     if level > 1:
         t = 0
         clip = VideoFileClip(video_dir + '\\' + 'ГиперПрыжок.mp4')  # (or .webm, .avi, etc.)
-        size = WIDTH, HEIGHT
-        screen = pygame.display.set_mode(size, 0, 32)
+        size = width, height
+        clip = clip.resize((width, height))
+        # screen = pygame.display.set_mode(size, 0, 32)
         surface = getSurface(0)
         clock = pygame.time.Clock()
         while True:
@@ -898,7 +901,8 @@ def glava0():
 
             t += 1 / 45  # use actual fps here
             pygame.display.flip()
-
+            result_menu_show = False
+            result_menu_show2 = False
     return
 
 
@@ -1077,13 +1081,13 @@ def key_():
 def result_itogo():
     score_, mobs, hits, boolets, accuracy, bot_kill, time_game, death = 0, 0, 0, 0, 0, 0, 0, 0
     # пишем новое значение счёта
-    screen.fill((0, 0, 0), (500, 200, WIDTH - 1000, HEIGHT - 400))
-    size = 38
+    screen.fill((0, 0, 0), (int(500/1/5), int(200/1/5), WIDTH - (500/1.5), HEIGHT - (200/1.5)))
+    size = int(38)
     font = pygame.font.SysFont('monospace', size)
     for i in range(level):
         score_ += score.score[i]
     text_screen = font.render('ОЧКИ: ' + str(score_), True, ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - 400, HEIGHT // 2 - size * 4))
+    screen.blit(text_screen, (WIDTH // 2 - int(400), HEIGHT // 2 - int(size * 4)))
     for i in range(level):
         mobs += score.mobs[i]
     text_screen = font.render('УНИЧТОЖЕНО МЕТЕОРИТОВ: ' + str(mobs), True,
@@ -1386,6 +1390,7 @@ while running:
             file_video = random.choice(['Экран_1.mp4', 'Экран_2.mp4', 'Экран_3.mp4', 'Экран_4.mp4'])
             clip = VideoFileClip(video_dir + '\\' + file_video)  # (or .webm, .avi, etc.)
             surface = getSurface(0)
+            clip = clip.resize((width, height))
             t = 0
             size = WIDTH, HEIGHT
             screen = pygame.display.set_mode(size, 0, 32)
