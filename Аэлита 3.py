@@ -1,13 +1,9 @@
 # Импорт и инициализация
 import os
-import numpy as np
-import numpy
 import csv
 import pygame
 import random
-# import cv2
 from os import path
-from moviepy.editor import VideoFileClip
 
 pygame.init()  # Устанавливаем размеры окна
 infoObject = pygame.display.Info()
@@ -16,34 +12,23 @@ pygame.display.set_mode((width, height))
 screen = pygame.display.set_mode(size)  # screen — холст, на котором нужно рисовать:
 pygame.mouse.set_visible(True)  # Скрываем курсор мыши
 Mouse1, Mouse2, Flag, Flag2 = False, False, 0, 0  # Мышинные клавиши небыли нажаты, в текущий момент
-# Path = 'img\\image'                                  # Указываем путь для папки с картинками
 clock = pygame.time.Clock()  # Задаем количество FPS
-fps = 60
 menuN, menu_y = 1, 1  # Переменная номера меню и выбора пункта меню
 font_aelita = 100  # Размер шрифта для меню 1920/24/38 => 80, 50 // 1024 =>
 font_menu = 50
 font_qwest = 30
+color_menu_cursor = ('black')
+color_menu = pygame.Color('black')  # цвет меню
 text = []  # Список меню
 text1 = ["НОВАЯ ИГРА", "ЗАГРУЗКА УРОВНЕЙ", "НАСТРОЙКИ", "ВАШ СЧЕТ", "ДО ВСТРЕЧИ ПИЛОТ"]
 text2 = ['ЭКРАН 800 х 600', 'ЭКРАН 1024х768', 'ЭКРАН 1600х900', 'ЭКРАН 1920x1080', 'ПОЛНЫЙ ЭКРАН']
-text3 = ['1. земля первый полет', '2. путь на марс', '3. титан и его улучшения', '4. альфа-центавра', '5. планета мюл на связи',
+text3 = ['1. земля первый полет', '2. путь на марс', '3. титан и его улучшения', '4. альфа-центавра',
+         '5. планета мюл на связи',
          '6. роккот нас ждет', '7. на базе пиратов ', '8. битва за галактику']
-dialog = ['']  # Диалоги
-color_menu = pygame.Color('black')  # цвет меню
-color_menu_cursor = ('black')
-n_star = 200  # создаем коорднаты звезд и их количество
-speed_star = 0.00515
-stars_ar = np.random.uniform(random.uniform(0, 360), random.uniform(0, 1500), size=(2, n_star))
-glava = 0  # Создаем главы игры/ Переменная отвечает за текущую главу
-color = 255  # Цвет вывода текста для квеста
-text_height, text_width, cf = 23, 18, 1  # Размеры текста для квеста
-
 img_dir = path.join(path.dirname(__file__), 'img\\image')
 mp3_dir = path.join(path.dirname(__file__), 'img\\mp3')
 data_font_dir = path.join(path.dirname(__file__), 'img\\data_font')
-data_text_mp3_dir = path.join(path.dirname(__file__), 'img\\data_text_mp3')
 sprits_dir = path.join(path.dirname(__file__), 'img\\Sprits')
-video_dir = path.join(path.dirname(__file__), 'img\\video')
 WIDTH = width
 HEIGHT = height
 FPS = 60
@@ -56,17 +41,6 @@ pygame.init()
 pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Космическое путешествие Аэлита!")
-
-
-def getSurface(t, srf=None):
-    frame = clip.get_frame(t)  # t - время в секундах
-    if srf is None:
-        # Перемещаем массив и создаём поверхность Pygame
-        return pygame.surfarray.make_surface(frame.swapaxes(0, 1))
-    else:
-        pygame.surfarray.blit_array(srf, frame.swapaxes(0, 1))
-        return srf
-
 
 class Bot(pygame.sprite.Sprite):
     def __init__(self, health):
@@ -90,7 +64,6 @@ class Bot(pygame.sprite.Sprite):
         self.power = 1
         self.energy = 1
         self.step_y = 0
-
     def update(self):
         x, y, x1, y1 = self.rect
         if self.health_bot < self.health_bot2:
@@ -120,7 +93,6 @@ class Bot(pygame.sprite.Sprite):
         if self.rect.top > HEIGHT:
             self.kill()
             newbots(self.health_bot2)
-
     def shoot_bot(self):
         now = pygame.time.get_ticks()
         if now - self.last_shot > self.shoot_delay / self.power:
@@ -138,18 +110,14 @@ class Bot(pygame.sprite.Sprite):
                 bullets_bot.add(bullet_bot1)
                 bullets_bot.add(bullet_bot2)
                 shoot_sound.play()
-
     def powerup(self):
         self.power += 1
         self.power_time = pygame.time.get_ticks()
-
     def energyup(self):
         self.energy += 1
         if self.step <= 15:
             self.step += 5
         self.energy_time = pygame.time.get_ticks()
-
-
 class Bullet_bot(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -159,14 +127,11 @@ class Bullet_bot(pygame.sprite.Sprite):
         self.rect.centerx = x
         self.speedy = 15
         self.bullet_health = 1
-
     def update(self):
         self.rect.y += self.speedy
         # уничтожить, если он заходит за нижнюю часть экрана
         if self.rect.bottom > HEIGHT:
             self.kill()
-
-
 class Player(pygame.sprite.Sprite):
     def __init__(self, health):
         pygame.sprite.Sprite.__init__(self)
@@ -190,7 +155,6 @@ class Player(pygame.sprite.Sprite):
         self.energy = 1
         self.energy_time = pygame.time.get_ticks()
         self.bullet_health = 1
-
     def update(self):
         global bx, by, player_anim, player_img
         now = pygame.time.get_ticks()
@@ -252,7 +216,6 @@ class Player(pygame.sprite.Sprite):
             if self.step > 5:
                 self.step -= 4
             self.energy_time = pygame.time.get_ticks()
-
     def shoot(self):
         now = pygame.time.get_ticks()
         if now - self.last_shot > self.shoot_delay / self.power:
@@ -271,18 +234,14 @@ class Player(pygame.sprite.Sprite):
                 bullets.add(bullet1)
                 bullets.add(bullet2)
                 shoot_sound.play()
-
     def powerup(self):
         self.power += 1
         self.power_time = pygame.time.get_ticks()
-
     def energyup(self):
         self.energy += 1
         if self.step <= 12:
             self.step += 4
         self.energy_time = pygame.time.get_ticks()
-
-
 class Mob(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
@@ -303,7 +262,6 @@ class Mob(pygame.sprite.Sprite):
         self.last_update = pygame.time.get_ticks()
         self.health = self.radius // 10
         self.health2 = self.radius // 10
-
     def rotate(self):
         now = pygame.time.get_ticks()
         if now - self.last_update > 50:
@@ -316,7 +274,6 @@ class Mob(pygame.sprite.Sprite):
             self.image = new_image
             self.rect = self.image.get_rect()
             self.rect.center = old_center
-
     def update(self):
         self.rotate()
         self.rect.x += self.speedx
@@ -330,8 +287,6 @@ class Mob(pygame.sprite.Sprite):
             self.speedy = random.randrange(self.speedy_start, self.speedy_stop)
             self.speedx = self.speedx_stop
             self.health = self.radius // 10
-
-
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, center, size):
         pygame.sprite.Sprite.__init__(self)
@@ -342,7 +297,6 @@ class Explosion(pygame.sprite.Sprite):
         self.frame = 0
         self.last_update = pygame.time.get_ticks()
         self.frame_rate = 50
-
     def update(self):
         now = pygame.time.get_ticks()
         if now - self.last_update > self.frame_rate:
@@ -355,8 +309,6 @@ class Explosion(pygame.sprite.Sprite):
                 self.image = explosion_anim[self.size][self.frame]
                 self.rect = self.image.get_rect()
                 self.rect.center = center
-
-
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -365,14 +317,11 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.bottom = y
         self.rect.centerx = x
         self.speedy = - 15
-
     def update(self):
         self.rect.y += self.speedy
         # уничтожить, если он заходит за верхнюю часть экрана
         if self.rect.bottom < 0:
             self.kill()
-
-
 class Pow(pygame.sprite.Sprite):
     def __init__(self, center):
         pygame.sprite.Sprite.__init__(self)
@@ -381,14 +330,11 @@ class Pow(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = center
         self.speedy = 2
-
     def update(self):
         self.rect.y += self.speedy
         # убить, если он сдвинется с нижней части экрана
         if self.rect.top > HEIGHT:
             self.kill()
-
-
 class Score:
     def __init__(self):
         self.level = [0, 0, 0, 0, 0, 0, 0, 0]
@@ -400,7 +346,6 @@ class Score:
         self.death = [0, 0, 0, 0, 0, 0, 0, 0]
         self.bot_kill = [0, 0, 0, 0, 0, 0, 0, 0]
         self.time_game = [0, 0, 0, 0, 0, 0, 0, 0]
-
     def update(self, screen):
         global level
         # пишем новое значение счёта
@@ -439,8 +384,6 @@ class Score:
         for i in range(self.death[level]):
             screen.blit(emodsi, (ddx + size + 10 + q + size * (i - q1), size * (7 + q2)))
         self.level = level
-
-
 def load_level(level):
     global mp3_fon, fon_text, text_mp3, bonus, mp3_fon_list, Vstart_list, Vstop_list, health_bots, bonus_list, Health_player_list, \
         musik, game_time, last_time_game, now_game
@@ -465,9 +408,6 @@ def load_level(level):
     player.bullet_health = level + 0.5
     musik = pygame.mixer.music.load(mp3_dir + '\\' + mp3_fon)
     now_game = pygame.time.get_ticks()
-    """ КОНЕЦ"""
-
-
 def restart_game():
     global now, n_bots, level, bx, by
     # Восстановление переменных плеера
@@ -495,47 +435,19 @@ def restart_game():
         i.kill()
     for i in bullets_bot:
         i.kill()
-
-
 def newbots(health_bot):
     global all_sprites
     b = Bot(health_bot)
     all_sprites.add(b)
     bots.add(b)
-
-
 def newmob():
     global mobs, all_sprites
     m = Mob()
     all_sprites.add(m)
     mobs.add(m)
-
-
 def show_go_screen():
-    global size
-    global clip, screen, clip_load, level, Health_player_list
+    global clip, screen, clip_load, level, Health_player_list, size, now_game
     player.health_player = int(Health_player_list[level])
-    # Загрузка аудио
-    song = pygame.mixer.Sound(mp3_dir + '\\' + 'Сердцебиение.mp3')
-    song.play()
-    # Загрузка видео
-    clip = VideoFileClip(video_dir + '\\' + "heartbeat.mp4")  # (or .webm, .avi, etc.)
-    surface = getSurface(0)
-    clip = clip.resize((width, height))
-    t = 0
-    screen = pygame.display.set_mode(size, 0, 32)
-    clock = pygame.time.Clock()
-    # Рисуем поверхность в  окне
-    srf = surface
-    while True:
-        screen.blit(getSurface(t, None), (0, 0))
-        if t > 6.8:
-            t = 0
-            break
-        t += 1 / 90  # use actual fps here
-        pygame.display.flip()
-        clock.tick(80)
-    clip.reader.close()
     # Музыкальное сопровождение
     pygame.mixer.music.load(mp3_dir + '\\' + "Меню1.mp3")
     pygame.mixer.music.play(-1)
@@ -563,6 +475,7 @@ def show_go_screen():
     draw_text(screen, 'Выйти из игры "ESC"', 30, WIDTH / 2, HEIGHT * 3 / 4, 'white')
     pygame.display.flip()
     a = True
+    now_game = pygame.time.get_ticks()
     while a:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -570,22 +483,16 @@ def show_go_screen():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pygame.quit()
-                    clip.reader.close()
                     exit()
                 elif (event.key == pygame.K_KP_ENTER or event.key == pygame.K_RETURN):
                     a = False
-                    clip_load = True
     return
-
-
 def draw_text(surf, text, size, x, y, color):
     font = pygame.font.Font(font_name, size)
     text_surface = font.render(text, True, color)
     text_rect = text_surface.get_rect()
     text_rect.midtop = (x, y)
     surf.blit(text_surface, text_rect)
-
-
 def game_over_():
     global game_over
     pygame.mixer.music.pause()
@@ -597,32 +504,6 @@ def game_over_():
     pygame.mixer.music.pause()
     pygame.mixer.music.load(mp3_dir + '\\' + mp3_fon_list[level])
     pygame.mixer.music.play(-1)
-
-
-# Затемнение экрана
-class Fade(pygame.sprite.Sprite):
-    def __init__(self, alpha1):
-        super().__init__()
-        self.rect = pygame.display.get_surface().get_rect()
-        self.image = pygame.Surface(self.rect.size, flags=pygame.SRCALPHA)
-        if alpha1 == 0:
-            self.alpha = 0
-            self.direction = 1
-        else:
-            self.alpha = 255
-            self.direction = -1
-
-    def update(self):
-        global width, height, screen
-        self.image.fill((0, 0, 0, self.alpha))
-        self.alpha += self.direction
-        if self.alpha > 255 or self.alpha < 0:
-            self.direction *= -1
-            self.alpha += self.direction
-
-
-# Конец затемнения экрана
-
 # Разрешение экрана изменение размера
 def resolution(width_, height_, full):
     global screen, width, height, font_aelita, font_menu, background_image, background_image_original, size, WIDTH, HEIGHT
@@ -630,6 +511,7 @@ def resolution(width_, height_, full):
         # infoObject = pygame.display.Info()
         pygame.display.set_mode((infoObject.current_w, infoObject.current_h))
         size = width, height = infoObject.current_w, infoObject.current_h
+        WIDTH, HEIGHT = size
         screen = pygame.display.set_mode((width, height))
         font_aelita = int(width / 24)
         font_menu = int(width / 38)
@@ -642,16 +524,6 @@ def resolution(width_, height_, full):
         size = width, height = width_, height_
         WIDTH, HEIGHT = size
     background_image = background_image_original.copy()
-
-
-# Загрузка текста квестов и диалогов
-def load_text(filename):
-    filename = "data_game\\" + filename
-    with open(filename, 'r', encoding='utf-8') as File:
-        dialogi = [line.strip() for line in File]
-    return dialogi
-
-
 # Загрузка картинок
 def load_image(path, name, color_key=None):
     fullname = os.path.join(path, name)
@@ -667,14 +539,10 @@ def load_image(path, name, color_key=None):
     else:
         image = image.convert_alpha()
     return image
-
-
 # Выход из игры
 def quit_out():
     pygame.quit()
     exit()
-
-
 # Обработка нажатий клавиш в меню
 def key_menu():
     global menu_y, menuN, font_menu, font_aelita, Mouse1, Mouse2, text_mp3_list, level, mp3_fon_list, result_menu_show
@@ -709,16 +577,14 @@ def key_menu():
                 pygame.mixer.music.load("img\\mp3\\" + mp3_fon_list[level])
                 pygame.mixer.music.play(-1)
                 return
-
-
 def choice_menu():
     global menu_y, menuN, Mouse2, Mouse1, menu_show, level, result_menu_show
     Mouse2, Mouse1 = False, False
     if menuN == 1:
         if menu_y == 1:  # Начало игры
-            result_menu_show = True
+            # result_menu_show = True
             load_level(0)
-            glava0()
+            menu_show = False
             return
         if menu_y == 2:  # Настройка
             menuN, menu_y = 3, 1
@@ -741,11 +607,10 @@ def choice_menu():
         if menu_y == 5:
             resolution(0, 0, True)
     elif menuN == 3:
-        result_menu_show = True
+        # result_menu_show = True
         level = menu_y - 1
         load_level(level)
         menu_show = False
-        glava0()
         return
 
 
@@ -798,141 +663,12 @@ def menu():
     return pos_x, pos_y
 
 
-# Рисуем звездный поток
-def stars():
-    global stars_ar, width, height, move_x, move_y, speed_star
-    # Черное небо
-    xC, yC = int(width / 2), int(height / 2)
-    for i in range(n_star):
-        # Увеличиваем радиус
-        stars_ar[1, i] += 1 + (stars_ar[1, i] * speed_star)
-        # Вычисляем координаты  х,у от радиуса и угла
-        x = int(xC + np.sin(stars_ar[0, i]) * stars_ar[1, i] + move_x)
-        y = int(yC + np.cos(stars_ar[0, i]) * stars_ar[1, i] + move_y)
-        # Если наши координаты выходят за видимую область они меняются на видимые случайным образом
-        if (x >= width or x <= 0) or (y >= height or y <= 0):
-            # 0, 1 - градус от 0-360 и радиус - максимальный размер отрезка от центра экрана в угол
-            stars_ar[1, i] = np.random.uniform(0, numpy.sqrt(width ** 2 + height ** 2))
-            stars_ar[0, i] = np.random.uniform(0, 360)
-        # Отрисовка звезды
-        screen.fill((((random.randint(200, 250), random.randint(200, 250), 100 + random.randint(0, 150)))),
-                    (x, y, 1 + stars_ar[0, i] * 0.01, 1 + stars_ar[0, i] * 0.01))
-        # Прицел
-        # pygame.draw.line(screen, pygame.Color('white'), (xC + move_x - 15, yC + move_y), (xC + move_x + 15, yC + move_y))
-        # pygame.draw.line(screen, pygame.Color('white'), (xC + move_x, yC + move_y - 15), (xC + move_x, yC + move_y + 15))
-
-
 def fon_move():
     global background_image, screen
     background_image = pygame.transform.scale(background_image, (width, height))
     # тряска
-    # x, y = random.randint(0,1), random.randint(0,1)
     x, y = 0, 0
     screen.blit(background_image, (- int(x), - int(y)))
-
-
-def scena(file_name):
-    global dialog, img_dir
-    bg_image = load_image(img_dir, file_name)
-    bg_image = pygame.transform.scale(bg_image, (width, height))
-    sprites = pygame.sprite.Group(Fade(1))
-    a = 255
-    while a > 0:
-        a -= 1
-        sprites.update()
-        screen.blit(bg_image, (0, 0))
-        sprites.draw(screen)
-        pygame.display.update()
-        clock.tick(60)
-    return bg_image
-
-
-def glava0():
-    global clip, surface, screen, clock, result_menu_show, result_menu_show2
-    global width, height, screen, menu_show, fon_text, text_mp3_list, level, Fon_text_list, mp3_dir
-    scena(fon_text)
-    pygame.mixer.music.load(data_text_mp3_dir + '\\' + text_mp3_list[level])
-    pygame.mixer.music.play(0)
-    filename = 'img\\dialog\\' + str(level + 1) + '.txt'
-    qwest(40, 40, width - 80, (height - int(height / 6) * 5), 200, ('gray14'), filename)
-    pygame.mixer.music.pause()
-    pygame.mixer.music.load(mp3_dir + '\\' + mp3_fon_list[level])
-    pygame.mixer.music.play(-1)
-    if level > 1:
-        t = 0
-        clip = VideoFileClip(video_dir + '\\' + 'ГиперПрыжок.mp4')  # (or .webm, .avi, etc.)
-        size = width, height
-        clip = clip.resize((width, height))
-        # screen = pygame.display.set_mode(size, 0, 32)
-        surface = getSurface(0)
-        clock = pygame.time.Clock()
-        while True:
-            clock.tick(60)
-            screen.blit(getSurface(t, None), (0, 0))
-            if t > 10.00:
-                sprites = pygame.sprite.Group(Fade(0))
-                a = 255
-                while a > 2:
-                    a -= 2
-                    sprites.update()
-                    screen.blit(getSurface(t, None), (0, 0))
-                    sprites.draw(screen)
-                    pygame.display.update()
-                    pygame.display.flip()
-                    clock.tick(60)
-                sprites = pygame.sprite.Group(Fade(1))
-                a = 255
-                while a > 2:
-                    a -= 2
-                    sprites.update()
-                    screen.blit(background_img[level], (bx, by))
-                    sprites.draw(screen)
-                    pygame.display.update()
-                    pygame.display.flip()
-                    clock.tick(60)
-                t = 0
-                break
-            t += 1 / 45  # use actual fps here
-            pygame.display.flip()
-            result_menu_show = False
-    return
-
-
-def button(name, x, y, color):
-    global Mouse1, Mouse2, Flag, Flag2
-    color = pygame.Color(100, 100, 100)
-    font = pygame.font.SysFont('monospace', 24)  # Задем шрифт
-    simbol = font.render(name, True, ((250, 250, 250)))  # Рендерим кнопку
-    _w, _h = simbol.get_width(), simbol.get_height()  # Устанавливаем размер букв
-    pos_x, pos_y = pygame.mouse.get_pos()
-    if (x < pos_x < x + _w and y < pos_y < y + _h):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                color.hsva = (100, 100, 75)
-                screen.fill(color, ((x + 3, y + 3, _w + 3, _h + 3)))  # Рисуем кнопку
-                color.hsva = (100, 100, 75)
-                screen.fill(color, (x, y, _w, _h))  # Рисуем кнопку
-                simbol = font.render(name, True, ((0, 0, 0)))  # Рендерим кнопку
-                screen.blit(simbol, (x + 3, y + 3))
-                pygame.display.flip()
-            elif event.type == pygame.MOUSEBUTTONUP:
-                color.hsva = (100, 100, 50)
-                screen.fill(color, ((x + 3, y + 3, _w + 3, _h + 3)))  # Рисуем кнопку
-                color.hsva = (100, 100, 75)
-                screen.fill(color, (x, y, _w, _h))  # Рисуем кнопку
-                screen.blit(simbol, (x, y))
-                pygame.display.flip()
-                return True
-    else:
-        color.hsva = (100, 100, 50)
-        screen.fill(color, ((x + 3, y + 3, _w + 3, _h + 3)))  # Рисуем кнопку
-        color.hsva = (100, 100, 75)
-        screen.fill(color, (x, y, _w, _h))  # Рисуем кнопку
-        screen.blit(simbol, (x, y))
-        pygame.display.flip()
-    return False
 
 
 def press_key():
@@ -956,103 +692,6 @@ def press_key():
             return pygame.MOUSEMOTION
 
 
-def cls(x, y, x1, y1, col):
-    screen.fill((col), (x, y, x1, y1))  # Закрашиваем экран черным
-
-
-def cursor_(x, y, color, color_fon, simbol_w, simbol_h):
-    if color != color_fon:
-        color_ = (0, int(color), 0)
-    else:
-        color_ = color_fon
-    screen.fill(color_fon, (x, y, simbol_w, simbol_h))  # Закрашиваем курсор черным
-    screen.fill(color_, (x + simbol_w, y, simbol_w, simbol_h))  # Закрашиваем курсор зеленым или колором
-
-
-def qwest(x1, y1, dx, dy, color_font, color_fon, filename):
-    global width, height, font_qwest, color, menu_show
-    if color_font != None:  # Если цвет шрифта задан устанавливаем его иначе по умолчанию зеленый
-        color = color_font
-    fps = 6
-    clock = pygame.time.Clock()
-    with open(filename, 'r', encoding='utf-8') as File:
-        dialog = [line.strip().split() for line in
-                  File]  # Предложение разбивает на слова, чтобы определять размер каждого слова
-    font = pygame.font.SysFont('monospace', 24)  # Задем шрифт
-    simbol = font.render(dialog[0][0][0], True, ((0, 255, 0)))  # Выдергиваем символ и рендерим
-    simbol_w, simbol_h = simbol.get_width(), simbol.get_height()  # Устанавливаем размер букв
-    one_ = True  # Задержка при печати текста и знаков препинания
-    delay, t = 30, 6  # Задержка при печати текста и знаков препинания
-    x, y, ch, i, end_s = x1, y1, True, 0, ''  # Условие для выхода из цикла, i - номера строк, t - задержка на
-    # препинаниях
-    cls(x, y, dx, dy, color_fon)
-    s = 0  # Переебирает по словам
-    text_w = []  # Список текста построчный для окна
-    win_x, win_y = int(dx / simbol_w) - 2, int(dy / simbol_h)  # Границы окна в буквах
-
-    stroka = ''  # Собираем список входящий в рамки окна
-    for line in dialog:
-        for word in line:
-            if len(word) == 0:
-                text_w.append(' ')
-            elif len(stroka + word) < win_x:
-                stroka += (word + ' ')
-            else:
-                text_w.append(stroka)
-                stroka = word + ' '
-        text_w.append(stroka)
-        stroka = ' '
-    if len(text_w) < 10:
-        for i in range(10 - len(text_w)):
-            text_w.append(' ')
-
-    start, end_ = 0, win_y  # Начало цикла и конец, переменные меняются во время смещения
-    while ch:
-        for i1 in range(start, end_):
-            slovo = text_w[i1]
-            if one_:
-                for j in slovo:  # По буквенный вывод
-                    simbol = font.render(j, True, ((0, 255, 0)))  # Выдергиваем символ и рендерим
-                    cursor_(x, y, color, color_fon, simbol_w, simbol_h)  # Рисуем курсор
-                    screen.blit(simbol, (x, y))
-                    pygame.display.flip()
-                    x += simbol_w  # Увеличиваем строку на один символ
-                    if press_key() == pygame.KEYDOWN:
-                        delay, delay_, t = 0, 0, 0
-                        one_ = False
-                    if j in ',.':
-                        clock.tick(t)  # Задержка на знаках припенания
-                    clock.tick(delay)  # Задержка печати текста
-                cursor_(x, y, color_fon, color_fon, simbol_w, simbol_h)  # Закрашивает курсор фоном
-            else:
-                simbol = font.render(slovo, True, ((0, 255, 0)))  # Выдергиваем символ и рендерим
-                screen.blit(simbol, (x, y))
-                pygame.display.flip()
-            x, y = x1, y + simbol_h  # и перевод каретки
-        # Конец побуквенного вывода
-        ch1 = True
-        while ch1:
-            res = button(" Вперед! ", win_x * simbol_w - simbol_w * 7, win_y * simbol_h + simbol_h * 3, 'black')
-            if res:
-                load_level(level)
-                menu_show = False
-                return
-            press = press_key()
-            if press == pygame.K_UP:  # Проверка на выход до начала диалога
-                if start > 0:
-                    start -= 1
-                    end_ -= 1
-                    ch1 = False
-            elif press == pygame.K_DOWN:
-                if end_ < len(text_w):  # Проверка размера всего диалога, выполнение до конца
-                    start += 1  # Иначе оставляем строку i той же и s не меняем
-                    end_ += 1
-                    ch1 = False
-        x, y = x1, y1  # Вышли из цикла и переводми каретку в начало экрана
-        cls(x, y, dx, dy, color_fon)
-        pygame.display.flip()
-
-
 def key_():
     global Mouse1, Mouse2
     if Mouse2:
@@ -1074,96 +713,57 @@ def result_itogo():
     score_, mobs, hits, boolets, accuracy, bot_kill, time_game, death = 0, 0, 0, 0, 0, 0, 0, 0
     # пишем новое значение счёта
     level = 7
-    screen.fill((0, 0, 0), (int(500/2.08), int(200/2.08),  WIDTH - int(1000 / 2.08), HEIGHT - int(400/2.08)))
+    screen.fill((0, 0, 0), (int(500 / 2.08), int(200 / 2.08), WIDTH - int(1000 / 2.08), HEIGHT - int(400 / 2.08)))
     size = int(WIDTH / 50.5)
     font = pygame.font.SysFont('monospace', size)
     for i in range(level):
         score_ += score.score[i]
     text_screen = font.render('ОЧКИ: ' + str(score_), True, ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 - int(size * 4)))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500 / 2.08), HEIGHT // 2 - int(size * 4)))
     for i in range(level):
         mobs += score.mobs[i]
     text_screen = font.render('УНИЧТОЖЕНО МЕТЕОРИТОВ: ' + str(mobs), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 - size * 3))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500 / 2.08), HEIGHT // 2 - size * 3))
     for i in range(level):
         hits += score.hits[i]
     text_screen = font.render('ПОПАДАНИЯ: ' + str(hits), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 - size * 2))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500 / 2.08), HEIGHT // 2 - size * 2))
     for i in range(level):
         boolets += score.boolets[i]
     text_screen = font.render('ВСЕГО ВЫСТРЕЛОВ: ' + str(boolets), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 - size * 1))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500 / 2.08), HEIGHT // 2 - size * 1))
     if score.boolets[level] > 0:
         score.accuracy[level] = (score.hits[level] / score.boolets[level]) * 100
     for i in range(level):
         accuracy += score.accuracy[i]
     text_screen = font.render('ТОЧНОСТЬ СТРЕЛЬБЫ: ' + str(int(accuracy)) + ' %', True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 - size * 0))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500 / 2.08), HEIGHT // 2 - size * 0))
     for i in range(level):
         bot_kill += score.bot_kill[i]
     text_screen = font.render('УНИЧТОЖЕНО ПИРАТОВ: ' + str(int(bot_kill)), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 + size * 1))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500 / 2.08), HEIGHT // 2 + size * 1))
     for i in range(level):
         time_game += score.time_game[i]
     text_screen = font.render('ОСТАЛОСЬ ВРЕМЕНИ НА УРОВНЕ:' + str(int(time_game)), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 + size * 2))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500 / 2.08), HEIGHT // 2 + size * 2))
     for i in range(level):
         death += score.death[i]
     text_screen = font.render('СКОЛЬКО ПОМЕР: ' + str(int(death)), True,
                               ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (int(WIDTH / 20) + int(500/2.08), HEIGHT // 2 + size * 3))
+    screen.blit(text_screen, (int(WIDTH / 20) + int(500 / 2.08), HEIGHT // 2 + size * 3))
     cherep = pygame.image.load(path.join(sprits_dir, "Череп.png")).convert_alpha()
     emodsi = pygame.transform.scale(cherep, (size, size))
     ddx, ddy, q, q1 = text_screen.get_rect()
     q1, q2 = 0, 0
     for i in range(score.death[level]):
-        screen.blit(emodsi, (int(WIDTH / 20) + int(500/2.08) + ddx + size + 10 + q + size * (i - q1), size * (4 + q2)))
-
-
-def result_level():
-    # пишем новое значение счёта
-    screen.fill((0, 0, 0), (int(500/2.08), int(200/2.08),  WIDTH - int(1000 / 2.08), HEIGHT - int(400/2.08)))
-    size = int(WIDTH / 50.5)
-    font = pygame.font.SysFont('monospace', size)
-    text_screen = font.render('ОЧКИ: ' + str(score.score[level]), True,
-                              ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 - size * 4))
-    text_screen = font.render('УНИЧТОЖЕНО МЕТЕОРИТОВ: ' + str(score.mobs[level]), True,
-                              ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 - size * 3))
-    text_screen = font.render('ПОПАДАНИЯ: ' + str(score.hits[level]), True,
-                              ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 - size * 2))
-    text_screen = font.render('ВСЕГО ВЫСТРЕЛОВ: ' + str(score.boolets[level]), True,
-                              ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 - size * 1))
-    if score.boolets[level] > 0:
-        score.accuracy[level] = (score.hits[level] / score.boolets[level]) * 100
-    text_screen = font.render('ТОЧНОСТЬ СТРЕЛЬБЫ: ' + str(int(score.accuracy[level])) + ' %', True,
-                              ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 - size * 0))
-    text_screen = font.render('УНИЧТОЖЕНО ПИРАТОВ: ' + str(int(score.bot_kill[level])), True,
-                              ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 + size * 1))
-    text_screen = font.render('ОСТАЛОСЬ ВРЕМЕНИ НА УРОВНЕ:' + str(int(score.time_game[level])), True,
-                              ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 + size * 2))
-    text_screen = font.render('СКОЛЬКО ПОМЕР: ' + str(int(score.death[level])), True,
-                              ((250, 250, 250)))  # Выдергиваем слово и рендерим
-    screen.blit(text_screen, (WIDTH // 2 - int(500/2.08), HEIGHT // 2 + size * 3))
-    cherep = pygame.image.load(path.join(sprits_dir, "Череп.png")).convert_alpha()
-    emodsi = pygame.transform.scale(cherep, (size, size))
-    ddx, ddy, q, q1 = text_screen.get_rect()
-    q1, q2 = 0, 0
-    for i in range(score.death[level]):
-        screen.blit(emodsi, (WIDTH // 2 - 400 + ddx + size + 10 + q + size * (i - q1), size * (4 + q2)))
-
+        screen.blit(emodsi,
+                    (int(WIDTH / 20) + int(500 / 2.08) + ddx + size + 10 + q + size * (i - q1), size * (4 + q2)))
 
 # Установка фона
 background_image_original = load_image(img_dir, 'Заставка.jpg')
@@ -1172,8 +772,6 @@ background_image = pygame.transform.scale(background_image, (width, height))
 screen.blit(background_image, (0, 0))  # Закрашиваем фон черным
 move_x, move_y = 0, 0
 last_x, last_y = pygame.mouse.get_pos()
-sprites = pygame.sprite.Group(Fade(0))
-
 # Загрузка уровней
 plan = []
 with open("img\\Level_game.txt", encoding='utf-8') as r_file:
@@ -1208,11 +806,9 @@ for i in plan:
     text_mp3_list.append(i['text_mp3'])
     game_time_list.append(i['game_time'])
 background_img = []
-# background_list = ['Земля1.jpg', 'Земля2.jpg', 'Сатурн.jpg', 'Космос.jpg', 'Alfa.jpg', 'Betta.jpg', 'Х планета.jpg', 'Х планета.jpg']
 for img in background_list:
     background_img.append(
         pygame.transform.scale((pygame.image.load(path.join(img_dir, img)).convert()), (WIDTH + 200, HEIGHT + 200)))
-    # background = pygame.transform.scale(background_img[0], (WIDTH + 200, HEIGHT + 200))
 bx, by = -100, -100
 # Загрузка анимации спрайта плеера
 player_img = pygame.image.load(path.join(sprits_dir, "player3.png")).convert_alpha()
@@ -1368,41 +964,17 @@ while running:
         key_menu()  # Ждем события (действия пользователя)
         screen.fill((0, 0, 0))
         fon_move()  # Установка фона и тряски
-        stars()  # Запускаем звезды
         pos_x, pos_y = menu()  # Меню игры
-        clock.tick(fps)
+        clock.tick(60)
         if result_menu_show:
             result_itogo()
             pygame.display.flip()
         pygame.display.update()
-
-    if level == 7:
-        # Рисуем поверхность в  окне
-        if clip_load:
-            # Загрузка видео
-            file_video = random.choice(['Экран_1.mp4', 'Экран_2.mp4', 'Экран_3.mp4', 'Экран_4.mp4'])
-            clip = VideoFileClip(video_dir + '\\' + file_video)  # (or .webm, .avi, etc.)
-            surface = getSurface(0)
-            clip = clip.resize((width, height))
-            t = 0
-            size = WIDTH, HEIGHT
-            screen = pygame.display.set_mode(size, 0, 32)
-            clock = pygame.time.Clock()
-            clip_load = False
-        # srf = surface
-        screen.blit(getSurface(t, None), (0, 0))
-        if (file_video == 'Экран_1.mp4' and t > 10.01) or (file_video == 'Экран_2.mp4' and t > 19.99) \
-                or (file_video == 'Экран_3.mp4' and t > 30.0) or (file_video == 'Экран_4.mp4' and t > 12.00):
-            t = 0
-        t += 1 / 90  # use actual fps here
-
-    if level < 7:
+    if level <= 7:
         # Держим цикл на правильной скорости
         screen.blit(background_img[level], (bx, by))
-    # Ввод процесса (события)
-    for event in pygame.event.get():
-        # проверка для закрытия окна
-        if event.type == pygame.QUIT:
+    for event in pygame.event.get():                # Ввод процесса (события)
+        if event.type == pygame.QUIT:           # проверка для закрытия окна
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
@@ -1441,23 +1013,6 @@ while running:
             player.energyup()
             energy_sound.play()
             hit.kill()
-    # Проверка столкновений ботов и улучшений
-    for i in bots:
-        hits = pygame.sprite.spritecollide(i, powerups, True)
-        for hit in hits:
-            if hit.type == 'health':
-                b.health_bot += b.health_bot2
-                if b.health_bot >= b.health_bot2:
-                    b.health_b = b.health_bot2
-                hit.kill()
-            if hit.type == 'gun':
-                b.powerup()
-                power_sound.play()
-                hit.kill()
-            if hit.type == 'energy':
-                b.energyup()
-                power_sound.play()
-                hit.kill()
     # Обновление взаимодействие ракет ботов и ракет игрока
     hits = pygame.sprite.groupcollide(bullets_bot, bullets, True, True)
     if hits:
@@ -1470,8 +1025,6 @@ while running:
                 all_sprites.add(pow)
                 powerups.add(pow)
                 random.choice(expl_sounds).play()
-                # newmob()
-                # newbots(int(health_bots[level]))
 
     # Обновление взаимодействие ракет ботов и мобов
     hits = pygame.sprite.groupcollide(bullets_bot, mobs, True, True)
@@ -1508,7 +1061,6 @@ while running:
                 random.choice(expl_sounds).play()
                 hit.kill()
                 newmob()
-
     # Обновление взаимодействие ботов и ракет игрока
     hits = pygame.sprite.groupcollide(bots, bullets, False, True)
     if hits:
@@ -1547,15 +1099,6 @@ while running:
                 # Уничтожаем ракету бота
                 random.choice(expl_sounds).play()
                 game_over = True
-                sprites = pygame.sprite.Group(Fade(1))
-                a = 255
-                while a > 0:
-                    a -= 1
-                    sprites.update()
-                    screen.blit(background_img[level], (0, 0))
-                    sprites.draw(screen)
-                    pygame.display.update()
-                    clock.tick(60)
                 game_over_()
     # Проверка, взаимодействие игрока и Ботов
     hits = pygame.sprite.spritecollide(player, bots, False, pygame.sprite.collide_circle)
@@ -1579,16 +1122,6 @@ while running:
                 # Игрок уничтожен
             if player.health_player <= 0:
                 game_over = True
-                sprites = pygame.sprite.Group(Fade(0))
-                a = 255
-                while a > 0:
-                    a -= 1
-                    sprites.update()
-                    screen.blit(background_img[level], (0, 0))
-                    all_sprites.draw(screen)
-                    sprites.draw(screen)
-                    pygame.display.update()
-                    clock.tick(60)
                 game_over_()
     # Проверка, взаимодействие игрока и мобов
     hits = pygame.sprite.spritecollide(player, mobs, False, pygame.sprite.collide_circle)
@@ -1611,16 +1144,6 @@ while running:
             # Игрок уничтожен
             if player.health_player <= 0:
                 game_over = True
-                sprites = pygame.sprite.Group(Fade(0))
-                a = 255
-                while a > 0:
-                    a -= 1
-                    sprites.update()
-                    screen.blit(background_img[level], (0, 0))
-                    all_sprites.draw(screen)
-                    sprites.draw(screen)
-                    pygame.display.update()
-                    clock.tick(60)
                 game_over_()
     last_shot = pygame.time.get_ticks()
     if now - last_shot > 5000:
@@ -1630,22 +1153,30 @@ while running:
     score.update(screen)
     last_time_game = pygame.time.get_ticks()
     score.time_game[level] = game_time * 50000 - (last_time_game - now_game)
+    if last_time_game - now_game < game_time * 5000:
+        draw_text(screen, "ВЫ ПРОШЛИ НА " + str(level + 1) + ' УРОВЕНЬ!', 50,
+                  WIDTH / 2, HEIGHT * 1 / 4, 'white')
+        draw_text(screen, 'ПРОЧНОСТЬ ВАШЕГО КОРОБЛЯ ' + str(player.health_player2), 50, WIDTH / 2, HEIGHT * 3 / 4, 'white')
+        draw_text(screen, 'ВАШЕ ВЕЗЕНИЕ' + str(int((1 - bonus) * 100)) + '%', 50, WIDTH / 2,
+                  HEIGHT / 2, 'white')
     if last_time_game - now_game > game_time * 50000:
         if level < 7:
             level += 1
             load_level(level)
-            glava0()
+            pygame.mixer.music.load("img\\mp3\\" + mp3_fon_list[level])
+            pygame.mixer.music.play(-1)
             now_game = pygame.time.get_ticks()
         elif level == 7:
             while result_menu_show2:
-                result_level()
+                draw_text(screen, "ВЫ ПРОШЛИ ВСЕ УРОВНИ!!!", 50,
+                          WIDTH / 2, HEIGHT / 2, 'white')
+                draw_text(screen, 'Выйти из игры 2 раза "ESC"', 50, WIDTH / 2, HEIGHT * 3 / 4, 'white')
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit()
                     elif event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             result_menu_show2 = False
-
                 pygame.display.flip()
     pygame.display.flip()
     clock.tick(60)
